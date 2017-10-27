@@ -11,13 +11,14 @@
     },
     "production": {
       "extraBabelPlugins": [
-        "transform-runtime"
+        "transform-runtime",
+        ["import", { "libraryName": "antd", "libraryDirectory": "lib", "style": "css" }]
       ]
     }
   },
    "proxy": {
      "/api": {
-       "target": "http://mercury.tayond.com"
+       "target": "http://service.xuxuepu.com"
      }
    }
 }

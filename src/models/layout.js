@@ -7,7 +7,7 @@ export default {
   namespace: 'layout',
 
   state: {
-    loginLoading: false
+    collapsed: false
   },
 
   subscriptions: {
@@ -42,15 +42,27 @@ export default {
       } else {
         throw res.data;
       }
+    },
+    //跳转
+    *skip({ action },{ call, put }){
+      yield put(routerRedux.push(action));
     }
   },
 
   reducers: {
+    //保存登录信息
     saveLoginInfo(state, { payload: data }) {
       return {
         ...state,
         loginInfo: data
       };
+    },
+    //显示或隐藏菜单
+    toggleSider(state){
+      return {
+        ...state,
+        collapsed: !state.collapsed
+      }
     }
   }
 };

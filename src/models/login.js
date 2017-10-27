@@ -1,4 +1,4 @@
-import { login, isLogin } from './../services/login';
+import { login } from './../services/login';
 import { routerRedux } from 'dva/router'
 
 export default {
@@ -32,32 +32,15 @@ export default {
         password: password
       });
       yield put({ type: 'hideLoginLoading' });
-      if (Number(res.data.code) == 0) {
-        yield put({ type: 'saveLoginInfo', payload: res.data.data.phone });
+      if (!res.code) {
         yield put(routerRedux.push('/essay/list'));
       } else {
         throw res.data;
       }
     },
-    //判断是否登录
-    *isLogin({ payload }, { call, put }) {
-      //登录
-      let res = yield call(isLogin);
-      if (!res.data.code) {
-        yield put({ type: 'saveLoginInfo', payload: res.data.data.phone });
-      } else {
-        throw res.data;
-      }
-    }
   },
 
   reducers: {
-    saveLoginInfo(state, { payload: data }) {
-      return {
-        ...state,
-        loginInfo: data
-      };
-    },
     showLoginLoading (state) {
       return {
         ...state,

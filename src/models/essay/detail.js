@@ -1,4 +1,4 @@
-import { getViewDetail, viewCreate, viewUpdate } from './../../services/essay';
+import { getEssayDetail, addEssay, editEssay } from './../../services/essay';
 import PropTypes from 'prop-types';
 import { browserHistory } from 'dva/router';
 
@@ -19,9 +19,9 @@ export default {
     setup({ dispatch, history }) {
       // 监听 history 变化，当进入 `/user` 时触发 `load` action
       return history.listen(({ pathname, query }) => {
-        if (pathname === '/essay/Detail') {
+        if (pathname === '/essay/detail') {
           if(query.id){
-            dispatch({ type: 'getViewDetail', payload: {_id: query.id} });
+            dispatch({ type: 'getEssayDetail', payload: {id: query.id} });
           }
         }
       });
@@ -29,14 +29,11 @@ export default {
   },
 
   effects: {
-    *changeTabs({ e }, { call, put }){
-      yield put({ type: 'saveTabsValue', key: e });
-    },
-    *getViewDetail({ payload }, { call, put }) {
-      let res = yield call(getViewDetail, payload);
-      if (Number(res.data.code) == 0) {
-        yield put({ type: 'saveessayDetail', Detail: res.data.data });
-        console.log(PropTypes);
+    //获取文章详情
+    *getEssayDetail({ payload }, { call, put }) {
+      let res = yield call(getEssayDetail, payload);
+      if (Number(res.code) == 0) {
+        yield put({ type: 'saveEssayDetail', detail: res.data });
       } else {
         throw res.data;
       }
@@ -45,35 +42,26 @@ export default {
     *handleSubmit({ payload }, { call, put, select }){
       let ad = yield select(state => state.essayDetail.addEditData);
 
-      if(ad.view_type == 'word'){
-        if(!UE.getEditor("content").getContent()){
-          throw { message: '请输入内容!' };
-        }
-      }else{
-        let s = document.getElementById('fileInput').value;
-        if(s == ""){
-          throw { message: '请选择文件!' };
-        }
-
+      if(!UE.getEditor("content").getContent()){
+        throw { message: '请输入内容!' };
       }
 
       let data = document.getElementById("myForm");
       let d = {};
       d.title = data.title.value;
-      d.view_type = data.view_type.value;
-      d.title = data.title.value;
-      if(data._id.value){
-        d._id = data._id.value;
+      d.author = data.author.value;
+      d.description = data.description.value;
+      if(data.id.value){
+        d.id = data.id.value;
       }
       if(data.content){
         d.content = data.content.value;
       }
-      if(data.excel_file){
-        d.excel_file = data.excel_file.files[0];
-      }
 
-      let res = yield call(d._id ? viewUpdate : viewCreate, d);
-      if (Number(res.data.code) == 0) {
+      yield put({ type: 'saveEssayDetail', detail: d });
+
+      let res = yield call(d.id ? editEssay : addEssay, d);
+      if (!res.code) {
         browserHistory.go(-1);
       } else {
         throw res.data;
@@ -82,16 +70,9 @@ export default {
   },
 
   reducers: {
-    saveessayDetail(state, { Detail }) {
+    saveEssayDetail(state, { detail }) {
       return { ...state,
-        addEditData: Detail
-      };
-    },
-    saveTabsValue(state, { key }){
-      let ad = state.addEditData;
-      ad.view_type = key;
-      return { ...state,
-        addEditData: ad
+        addEditData: detail
       };
     }
   }
