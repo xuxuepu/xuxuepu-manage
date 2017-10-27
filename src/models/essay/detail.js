@@ -1,10 +1,10 @@
-import { getViewDetails, viewCreate, viewUpdate } from './../../services/project';
+import { getViewDetail, viewCreate, viewUpdate } from './../../services/essay';
 import PropTypes from 'prop-types';
 import { browserHistory } from 'dva/router';
 
 export default {
 
-  namespace: 'projectDetails',
+  namespace: 'essayDetail',
 
   state: {
     addEditData: {
@@ -19,9 +19,9 @@ export default {
     setup({ dispatch, history }) {
       // 监听 history 变化，当进入 `/user` 时触发 `load` action
       return history.listen(({ pathname, query }) => {
-        if (pathname === '/project/details') {
+        if (pathname === '/essay/Detail') {
           if(query.id){
-            dispatch({ type: 'getViewDetails', payload: {_id: query.id} });
+            dispatch({ type: 'getViewDetail', payload: {_id: query.id} });
           }
         }
       });
@@ -32,10 +32,10 @@ export default {
     *changeTabs({ e }, { call, put }){
       yield put({ type: 'saveTabsValue', key: e });
     },
-    *getViewDetails({ payload }, { call, put }) {
-      let res = yield call(getViewDetails, payload);
+    *getViewDetail({ payload }, { call, put }) {
+      let res = yield call(getViewDetail, payload);
       if (Number(res.data.code) == 0) {
-        yield put({ type: 'saveProjectDetails', details: res.data.data });
+        yield put({ type: 'saveessayDetail', Detail: res.data.data });
         console.log(PropTypes);
       } else {
         throw res.data;
@@ -43,7 +43,7 @@ export default {
     },
     //提交
     *handleSubmit({ payload }, { call, put, select }){
-      let ad = yield select(state => state.projectDetails.addEditData);
+      let ad = yield select(state => state.essayDetail.addEditData);
 
       if(ad.view_type == 'word'){
         if(!UE.getEditor("content").getContent()){
@@ -82,9 +82,9 @@ export default {
   },
 
   reducers: {
-    saveProjectDetails(state, { details }) {
+    saveessayDetail(state, { Detail }) {
       return { ...state,
-        addEditData: details
+        addEditData: Detail
       };
     },
     saveTabsValue(state, { key }){

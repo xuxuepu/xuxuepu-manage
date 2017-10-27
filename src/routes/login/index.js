@@ -30,10 +30,10 @@ const Login = ({
       <Form className={Style.loginForm} onSubmit={handleSubmit}>
         <FormItem className={Style.title}>胖墩XXXXXXXXL</FormItem>
         <FormItem>
-          {getFieldDecorator('userName', {
-            rules: [{required: true, message: '请输入用户名!'}]
+          {getFieldDecorator('phone', {
+            rules: [{required: true, message: '请输入手机号码!'}]
           })(
-            <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="用户名"/>
+            <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="手机号码"/>
           )}
         </FormItem>
         <FormItem>

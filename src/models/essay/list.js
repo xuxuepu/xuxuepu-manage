@@ -1,7 +1,7 @@
-import {getViewList, viewDelete, viewCopy} from './../../services/project';
+import {getViewList, viewDelete, viewCopy} from './../../services/essay';
 export default {
 
-  namespace: 'projectList',
+  namespace: 'essayList',
 
   state: {
     dataItem: []
@@ -11,7 +11,7 @@ export default {
     setup({ dispatch, history }) {
       // 监听 history 变化，当进入 `/user` 时触发 `load` action
       return history.listen(({ pathname }) => {
-        if (pathname === '/project/list' || pathname === '/') {
+        if (pathname === '/essay/list') {
           dispatch({ type: 'getViewList' });
         }
       });
@@ -21,11 +21,11 @@ export default {
   effects: {
     //获取列表
     *getViewList({ payload }, { call, put }) {
-      yield put({ type: 'showProjectListLoading' });
+      yield put({ type: 'showessayListLoading' });
       let res = yield call(getViewList, payload);
-      yield put({ type: 'hideProjectListLoading' });
+      yield put({ type: 'hideessayListLoading' });
       if (Number(res.data.code) == 0) {
-        yield put({ type: 'saveProjectList', dataItem: res.data.data });
+        yield put({ type: 'saveessayList', dataItem: res.data.data });
       } else {
         throw res.data;
       }
@@ -55,19 +55,19 @@ export default {
   },
 
   reducers: {
-    saveProjectList(state, { dataItem }){
+    saveessayList(state, { dataItem }){
       return {
         ...state,
         dataItem: dataItem
       };
     },
-    showProjectListLoading(state) {
+    showessayListLoading(state) {
       return {
         ...state,
         loading: true
       };
     },
-    hideProjectListLoading(state){
+    hideessayListLoading(state){
       return {
         ...state,
         loading: false

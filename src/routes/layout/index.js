@@ -3,17 +3,15 @@ import {connect} from 'dva';
 import PropTypes from 'prop-types';
 import Style from './index.less';
 import {Layout, Menu, Breadcrumb, Dropdown, Icon, Modal} from 'antd';
-import { Link, routerRedux } from 'dva/router';
+import { Link } from 'dva/router';
 import login from './../../models/login';
 const {Header, Content, Footer} = Layout;
 
-function clickMenu(v) {
+function clickMenu(v, dispatch) {
   if(v.key == 'list'){
-    //T.setState({ selectMenu: [v.key] });
-    //yield put(routerRedux.push('/project/list'));
+    
   }else if(v.key == 'logout'){
-    sessionStorage.clear();
-    //yield put(routerRedux.push('/login'))
+    dispatch({type: 'layout/logOut'});
   }else{
     Modal.info({
       title: '提示',
@@ -27,9 +25,9 @@ function clickMenu(v) {
   }
 }
 
-const LayoutDOM = ({children, location}) => {
+const LayoutDOM = ({children, location, dispatch}) => {
 
-  if (location.pathname == "/login") {
+  if (location.pathname == "/login" || location.pathname == "/") {
     return <div>{children}</div>
   }
 
@@ -38,14 +36,14 @@ const LayoutDOM = ({children, location}) => {
       <Header>
         <div style={{width: 1024, margin: '0 auto'}}>
           <div className={Style.logo}>胖墩XXXXXXXXL</div>
-          <Menu theme="dark" mode="horizontal" selectedKeys={['list']} style={{lineHeight: '64px', float: 'left'}} onClick={clickMenu}>
+          <Menu theme="dark" mode="horizontal" selectedKeys={['list']} style={{lineHeight: '64px', float: 'left'}} onClick={(v)=>clickMenu(v, dispatch)}>
             <Menu.Item key="list">文章列表</Menu.Item>
             <Menu.Item key="2">picture</Menu.Item>
             <Menu.Item key="3">audio</Menu.Item>
             <Menu.Item key="4">more</Menu.Item>
             <Menu.Item key="5">about</Menu.Item>
           </Menu>
-          <Dropdown overlay={<Menu onClick={clickMenu}>
+          <Dropdown overlay={<Menu onClick={(v)=>clickMenu(v, dispatch)}>
             <Menu.Item key="logout" style={{textAlign: 'center'}}>退出登录</Menu.Item>
           </Menu>} trigger={['click']}>
     <span style={{color: '#fff', float: 'right', cursor: 'pointer', height: 48}}>
@@ -75,7 +73,8 @@ const LayoutDOM = ({children, location}) => {
 
 LayoutDOM.propTypes = {
   children: PropTypes.element.isRequired,
-  location: PropTypes.object
+  location: PropTypes.object,
+  dispatch: PropTypes.func
 };
 
 export default connect()(LayoutDOM);

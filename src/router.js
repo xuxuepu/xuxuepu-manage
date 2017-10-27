@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Router, Route } from 'dva/router';
-import Layout from './routes/layout';
 
 const registerModel = (app, model) => {
   if (!(app._models.filter(m => m.namespace === model.namespace).length === 1)) {
@@ -13,39 +12,35 @@ const Routers = function ({ history, app }) {
   const routes = [
     {
       path: '/',
-      component: Layout,
+      getComponent(nextState, cb){
+        require.ensure([], require => {
+          registerModel(app, require('./models/layout'));
+          cb(null, require('./routes/layout'))
+        }, 'layout')
+      },
       getIndexRoute (nextState, cb) {
         require.ensure([], require => {
-          registerModel(app, require('./models/project/list'));
-          cb(null, { component: require('./routes/project/list') })
-        }, 'projectList')
+          registerModel(app, require('./models/login'));
+          cb(null, { component: require('./routes/login') })
+        }, 'login')
       },
       childRoutes: [
         {
-          path: 'login',
+          path: 'essay/list',
           getComponent (nextState, cb) {
             require.ensure([], require => {
-              registerModel(app, require('./models/login'));
-              cb(null, require('./routes/login'))
-            }, 'login')
+              registerModel(app, require('./models/essay/list'));
+              cb(null, require('./routes/essay/list'))
+            }, 'essayList')
           }
         },
         {
-          path: 'project/list',
+          path: 'essay/detail',
           getComponent (nextState, cb) {
             require.ensure([], require => {
-              registerModel(app, require('./models/project/list'));
-              cb(null, require('./routes/project/list'))
-            }, 'projectList')
-          }
-        },
-        {
-          path: 'project/details',
-          getComponent (nextState, cb) {
-            require.ensure([], require => {
-              registerModel(app, require('./models/project/details'));
-              cb(null, require('./routes/project/details'))
-            }, 'projectDetails')
+              registerModel(app, require('./models/essay/detail'));
+              cb(null, require('./routes/essay/detail'))
+            }, 'essayDetail')
           }
         }
       ]
